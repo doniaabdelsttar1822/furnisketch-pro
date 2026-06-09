@@ -1,6 +1,4 @@
 
-raw
-Index · HTML
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -85,28 +83,28 @@ textarea:focus{outline:none;border-color:#c8a97a}
 </style>
 </head>
 <body>
- 
+
 <header>
   <div>
     <div class="logo">Furni<span>Sketch</span> Pro</div>
     <div class="subtitle">محول أفكار الأثاث بالذكاء الاصطناعي</div>
   </div>
 </header>
- 
+
 <div class="main">
   <div class="sidebar">
- 
+
     <div class="section" style="background:#fffbf5;border-bottom:2px solid #c8a97a">
       <div class="section-title">🔑 Gemini API Key</div>
       <input class="api-input" type="password" id="apiKey" placeholder="الصقي الـ API Key هنا..." />
       <div style="font-size:11px;color:#999;margin-top:6px">مش بيتحفظ — بيُستخدم في المتصفح بس</div>
     </div>
- 
+
     <div class="tabs">
       <div class="tab act" onclick="switchTab('text')">✏️ وصف فكرة</div>
       <div class="tab" onclick="switchTab('sketch')">🖼️ رفع رسمة</div>
     </div>
- 
+
     <div id="text-panel">
       <div class="section">
         <div class="section-title">وصف القطعة</div>
@@ -115,7 +113,7 @@ textarea:focus{outline:none;border-color:#c8a97a}
         <button class="btn-main" onclick="generate('text')" id="genBtn">✨ توليد التصميم</button>
       </div>
     </div>
- 
+
     <div id="sketch-panel" style="display:none">
       <div class="section">
         <div class="section-title">ارفعي رسمة اليد</div>
@@ -130,7 +128,7 @@ textarea:focus{outline:none;border-color:#c8a97a}
         <button class="btn-main" onclick="generate('sketch')" id="sketchBtn" style="display:none;margin-top:8px">🔍 تحليل الرسمة</button>
       </div>
     </div>
- 
+
     <div class="section">
       <div class="section-title">الخامة</div>
       <div class="mat-grid">
@@ -160,7 +158,7 @@ textarea:focus{outline:none;border-color:#c8a97a}
         </div>
       </div>
     </div>
- 
+
     <div class="section">
       <div class="section-title">اللون</div>
       <div class="colors">
@@ -176,7 +174,7 @@ textarea:focus{outline:none;border-color:#c8a97a}
         <div class="cdot" style="background:#d4a574" onclick="selColor(this,'#d4a574','تيراكوتا')" title="تيراكوتا"></div>
       </div>
     </div>
- 
+
     <div class="section">
       <div class="section-title">الفينيش</div>
       <div class="finishes">
@@ -188,7 +186,7 @@ textarea:focus{outline:none;border-color:#c8a97a}
         <button class="fbtn" onclick="selFinish(this,'مشجر طبيعي')">مشجر طبيعي</button>
       </div>
     </div>
- 
+
     <div class="section">
       <div class="section-title">المقاسات (سم)</div>
       <div class="dim-row">
@@ -207,9 +205,9 @@ textarea:focus{outline:none;border-color:#c8a97a}
         <span class="dim-unit">سم</span>
       </div>
     </div>
- 
+
   </div>
- 
+
   <div class="canvas">
     <div class="toolbar">
       <button class="tbtn act" onclick="setView(this,'2D')">📐 2D أمامي</button>
@@ -227,11 +225,11 @@ textarea:focus{outline:none;border-color:#c8a97a}
     </div>
   </div>
 </div>
- 
+
 <script>
 let mat='خشب بلوط طبيعي', color='#c8a97a', colorName='بيج ذهبي', finish='مطفي', view='2D';
 let lastResult=null, sketchB64=null, sketchMime=null;
- 
+
 function switchTab(t){
   document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('act',(i===0&&t==='text')||(i===1&&t==='sketch')));
   document.getElementById('text-panel').style.display=t==='text'?'':'none';
@@ -241,7 +239,7 @@ function selMat(el,n){document.querySelectorAll('.mat-card').forEach(c=>c.classL
 function selColor(el,h,n){document.querySelectorAll('.cdot').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');color=h;colorName=n;}
 function selFinish(el,n){document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');finish=n;}
 function setView(el,v){document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('act'));el.classList.add('act');view=v;if(lastResult)renderResult(lastResult);}
- 
+
 function handleUpload(e){
   const f=e.target.files[0]; if(!f)return;
   sketchMime=f.type;
@@ -254,18 +252,18 @@ function handleUpload(e){
   };
   r.readAsDataURL(f);
 }
- 
+
 function getSpecs(){
   return{w:document.getElementById('dimW').value,d:document.getElementById('dimD').value,h:document.getElementById('dimH').value,mat,color,colorName,finish,view};
 }
- 
+
 function showErr(id,msg){const el=document.getElementById(id);el.textContent=msg;el.style.display='block';}
 function hideErr(id){document.getElementById(id).style.display='none';}
- 
+
 async function generate(type){
   const key=document.getElementById('apiKey').value.trim();
   if(!key){alert('من فضلك حطي الـ API Key الأول!');return;}
- 
+
   if(type==='text'){
     const p=document.getElementById('promptInput').value.trim();
     if(!p){showErr('textErr','اكتبي وصف القطعة الأول');return;}
@@ -279,11 +277,11 @@ async function generate(type){
 الخامة: ${s.mat} | اللون: ${s.colorName} (${s.color}) | الفينيش: ${s.finish}
 المقاسات: طول ${s.w}سم × عمق ${s.d}سم × ارتفاع ${s.h}سم
 العرض: ${s.view==='2D'?'رسمة هندسية أمامية':s.view==='3D'?'منظور ثلاثي الأبعاد':'تصور في غرفة معيشة'}
- 
+
 أجب بـ JSON بهذا الشكل بالظبط:
 {"name":"اسم القطعة","description":"وصف تفصيلي 3 جمل","svg":"كود SVG كامل viewBox 0 0 500 350 للقطعة بلون ${s.color} كلون رئيسي مع تفاصيل واضحة","features":["ميزة1","ميزة2","ميزة3"],"style":"النمط التصميمي","roomSuggestion":"اقتراح للتنسيق في الغرفة"}`;
     try{
-      const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`,{
+      const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,{
         method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.7,maxOutputTokens:2000}})
       });
@@ -300,7 +298,7 @@ async function generate(type){
     }
     btn.disabled=false;btn.textContent='✨ توليد التصميم';
   }
- 
+
   if(type==='sketch'){
     if(!sketchB64){showErr('sketchErr','ارفعي صورة الأول');return;}
     hideErr('sketchErr');
@@ -311,11 +309,11 @@ async function generate(type){
     const prompt=`أنت مصمم أثاث خبير. حلل رسمة اليد دي واعمل تصور نهائي احترافي.
 الخامة: ${s.mat} | اللون: ${s.colorName} (${s.color}) | الفينيش: ${s.finish}
 المقاسات: طول ${s.w}سم × عمق ${s.d}سم × ارتفاع ${s.h}سم
- 
+
 أجب بـ JSON فقط بدون أي نص إضافي:
 {"name":"اسم القطعة","description":"تفسير الرسمة والتصور النهائي","svg":"كود SVG viewBox 0 0 500 350 بلون ${s.color} كلون رئيسي","features":["ميزة1","ميزة2","ميزة3"],"style":"النمط","roomSuggestion":"اقتراح تنسيق"}`;
     try{
-      const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`,{
+      const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,{
         method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({contents:[{parts:[{inlineData:{mimeType:sketchMime,data:sketchB64}},{text:prompt}]}],generationConfig:{temperature:0.7,maxOutputTokens:2000}})
       });
@@ -333,7 +331,7 @@ async function generate(type){
     btn.disabled=false;btn.textContent='🔍 تحليل الرسمة';
   }
 }
- 
+
 function renderResult(r){
   const s=r.specs;
   const bg=s.view==='room'?'background:linear-gradient(180deg,#d4c9bc,#b8a898)':s.view==='3D'?'background:#f5f2ee':'background:#ffffff';
@@ -353,7 +351,7 @@ function renderResult(r){
     </div>
   </div>`;
 }
- 
+
 function exportHTML(){
   if(!lastResult){alert('ولدي تصميم الأول!');return;}
   const s=lastResult.specs;
@@ -366,4 +364,3 @@ function exportHTML(){
 </script>
 </body>
 </html>
- 
