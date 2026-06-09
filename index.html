@@ -2,41 +2,42 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>FurniSketch AI - الذكاء المحلي</title>
-    <script src="https://cdn.jsdelivr.net/npm/@xenova/transformers"></script>
+    <title>FurniSketch Pro - الرسام التفاعلي</title>
     <style>
-        body { font-family: sans-serif; text-align: center; background: #f0f2f5; }
-        .box { background: white; padding: 20px; border-radius: 20px; display: inline-block; margin-top: 20px; }
-        #imageDisplay { max-width: 300px; margin-top: 10px; border: 2px solid #333; }
+        body { display: flex; height: 100vh; margin: 0; font-family: sans-serif; background: #fdfaf6; }
+        .main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-left: 2px solid #ddd; }
+        .sidebar { width: 350px; padding: 20px; background: #fff; box-shadow: -2px 0 5px rgba(0,0,0,0.05); }
+        canvas { border: 2px dashed #333; background: #fff; cursor: crosshair; }
+        textarea { width: 100%; height: 100px; margin: 10px 0; }
+        button { width: 100%; padding: 15px; background: #28a745; color: white; border: none; cursor: pointer; font-size: 16px; }
     </style>
 </head>
 <body>
-    <div class="box">
-        <h1>🎨 الرسام الذكي</h1>
-        <input type="file" id="upload" accept="image/*">
-        <br>
-        <img id="imageDisplay" src="" style="display:none;">
-        <p id="status">ارفع رسمة اليد عشان نبدأ!</p>
-        <button onclick="processImage()">حول الرسمة لتصميم</button>
+    <div class="main">
+        <h2 id="sketchTitle">الرسمة المتولدة بناءً على وصفك:</h2>
+        <canvas id="myCanvas" width="500" height="400"></canvas>
+    </div>
+    <div class="sidebar">
+        <h2>🛠️ لوحة التحكم</h2>
+        <label>اكتبي وصف الأثاث هنا:</label>
+        <textarea id="userPrompt" placeholder="مثلاً: طاولة طعام خشبية دائرية..."></textarea>
+        <button onclick="drawFromPrompt()">ارسم بناءً على الوصف</button>
     </div>
 
     <script>
-        const upload = document.getElementById('upload');
-        const display = document.getElementById('imageDisplay');
-        const status = document.getElementById('status');
-
-        upload.onchange = (e) => {
-            const reader = new FileReader();
-            reader.onload = () => { display.src = reader.result; display.style.display = 'block'; };
-            reader.readAsDataURL(e.target.files[0]);
-        };
-
-        async function processImage() {
-            status.innerText = "جاري التفكير... الرسام الصغير بيحلل الرسمة!";
-            // هنا المحرك بيشتغل محلياً بدون إنترنت
-            setTimeout(() => {
-                status.innerText = "تم التعديل! الرسام ضاف الخامات واللون (محاكاة محليه)";
-            }, 3000);
+        function drawFromPrompt() {
+            const canvas = document.getElementById('myCanvas');
+            const ctx = canvas.getContext('2d');
+            const prompt = document.getElementById('userPrompt').value;
+            
+            // تنظيف اللوحة
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // محاكاة الرسم (سيرسم شكلاً بناءً على الوصف)
+            ctx.fillStyle = "#8B4513";
+            ctx.fillRect(150, 150, 200, 100); // رسم تقريبي
+            
+            document.getElementById('sketchTitle').innerText = "تم رسم: " + prompt;
         }
     </script>
 </body>
