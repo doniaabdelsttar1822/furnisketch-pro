@@ -79,6 +79,7 @@ textarea:focus{outline:none;border-color:#c8a97a}
 .tabs{display:flex;gap:0;border-bottom:1px solid #e8e4df}
 .tab{flex:1;padding:12px;text-align:center;cursor:pointer;font-size:14px;font-weight:600;color:#999;border-bottom:2px solid transparent;transition:all .2s;background:#fff}
 .tab.act{color:#2c2c2a;border-bottom-color:#2c2c2a}
+.free-badge{background:#e8f5e9;color:#2e7d32;border:1px solid #c8e6c9;border-radius:6px;padding:4px 10px;font-size:11px;margin-top:6px;display:inline-block}
 @media(max-width:700px){.main{grid-template-columns:1fr}.canvas{min-height:400px}}
 </style>
 </head>
@@ -95,8 +96,9 @@ textarea:focus{outline:none;border-color:#c8a97a}
   <div class="sidebar">
 
     <div class="section" style="background:#fffbf5;border-bottom:2px solid #c8a97a">
-      <div class="section-title">🔑 Gemini API Key</div>
-      <input class="api-input" type="password" id="apiKey" placeholder="الصقي الـ API Key هنا..." />
+      <div class="section-title">🔑 OpenRouter API Key</div>
+      <input class="api-input" type="password" id="apiKey" placeholder="sk-or-..." />
+      <div class="free-badge">✅ مجاني 100% بدون حدود</div>
       <div style="font-size:11px;color:#999;margin-top:6px">مش بيتحفظ — بيُستخدم في المتصفح بس</div>
     </div>
 
@@ -227,8 +229,8 @@ textarea:focus{outline:none;border-color:#c8a97a}
 </div>
 
 <script>
-let mat='خشب بلوط طبيعي', color='#c8a97a', colorName='بيج ذهبي', finish='مطفي', view='2D';
-let lastResult=null, sketchB64=null, sketchMime=null;
+let mat='خشب بلوط طبيعي',color='#c8a97a',colorName='بيج ذهبي',finish='مطفي',view='2D';
+let lastResult=null,sketchB64=null,sketchMime=null;
 
 function switchTab(t){
   document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('act',(i===0&&t==='text')||(i===1&&t==='sketch')));
@@ -241,7 +243,7 @@ function selFinish(el,n){document.querySelectorAll('.fbtn').forEach(b=>b.classLi
 function setView(el,v){document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('act'));el.classList.add('act');view=v;if(lastResult)renderResult(lastResult);}
 
 function handleUpload(e){
-  const f=e.target.files[0]; if(!f)return;
+  const f=e.target.files[0];if(!f)return;
   sketchMime=f.type;
   const r=new FileReader();
   r.onload=ev=>{
@@ -260,6 +262,28 @@ function getSpecs(){
 function showErr(id,msg){const el=document.getElementById(id);el.textContent=msg;el.style.display='block';}
 function hideErr(id){document.getElementById(id).style.display='none';}
 
+async function callAI(messages){
+  const key=document.getElementById('apiKey').value.trim();
+  if(!key)throw new Error('API_KEY_MISSING');
+  const res=await fetch('https://openrouter.ai/api/v1/chat/completions',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'Authorization':'Bearer '+key,
+      'HTTP-Referer':'https://furnisketch-pro.netlify.app',
+      'X-Title':'FurniSketch Pro'
+    },
+    body:JSON.stringify({
+      model:'meta-llama/llama-3.2-11b-vision-instruct:free',
+      messages:messages,
+      max_tokens:2000
+    })
+  });
+  const data=await res.json();
+  if(data.error)throw new Error(data.error.message);
+  return data.choices[0].message.content;
+}
+
 async function generate(type){
   const key=document.getElementById('apiKey').value.trim();
   if(!key){alert('من فضلك حطي الـ API Key الأول!');return;}
@@ -270,7 +294,7 @@ async function generate(type){
     hideErr('textErr');
     const btn=document.getElementById('genBtn');
     btn.disabled=true;btn.textContent='جاري التوليد...';
-    document.getElementById('canvasBody').innerHTML=`<div class="loading-box"><div class="spinner"></div><p>الذكاء الاصطناعي بيصمم قطعتك...</p></div>`;
+    document.getElementById('canvasBody').innerHTML='<div class="loading-box"><div class="spinner"></div><p>الذكاء الاصطناعي بيصمم قطعتك...</p></div>';
     const s=getSpecs();
     const prompt=`أنت مصمم أثاث خبير. اعمل تصور لقطعة الأثاث التالية وأجب بـ JSON فقط بدون أي نص إضافي أو backticks:
 الوصف: ${p}
@@ -278,23 +302,17 @@ async function generate(type){
 المقاسات: طول ${s.w}سم × عمق ${s.d}سم × ارتفاع ${s.h}سم
 العرض: ${s.view==='2D'?'رسمة هندسية أمامية':s.view==='3D'?'منظور ثلاثي الأبعاد':'تصور في غرفة معيشة'}
 
-أجب بـ JSON بهذا الشكل بالظبط:
-{"name":"اسم القطعة","description":"وصف تفصيلي 3 جمل","svg":"كود SVG كامل viewBox 0 0 500 350 للقطعة بلون ${s.color} كلون رئيسي مع تفاصيل واضحة","features":["ميزة1","ميزة2","ميزة3"],"style":"النمط التصميمي","roomSuggestion":"اقتراح للتنسيق في الغرفة"}`;
+أجب بهذا الـ JSON بالظبط:
+{"name":"اسم القطعة","description":"وصف تفصيلي 3 جمل","svg":"كود SVG كامل viewBox='0 0 500 350' للقطعة بلون ${s.color} كلون رئيسي مع تفاصيل واضحة","features":["ميزة1","ميزة2","ميزة3"],"style":"النمط التصميمي","roomSuggestion":"اقتراح للتنسيق في الغرفة"}`;
     try{
-      const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.7,maxOutputTokens:2000}})
-      });
-      const data=await res.json();
-      if(data.error){showErr('textErr','خطأ: '+data.error.message);document.getElementById('canvasBody').innerHTML='<div class="placeholder"><div class="icon">⚠️</div><p>حدث خطأ</p></div>';btn.disabled=false;btn.textContent='✨ توليد التصميم';return;}
-      const text=data.candidates[0].content.parts[0].text;
+      const text=await callAI([{role:'user',content:prompt}]);
       const clean=text.replace(/```json|```/g,'').trim();
       const parsed=JSON.parse(clean);
       lastResult={...parsed,specs:s};
       renderResult(lastResult);
     }catch(e){
-      showErr('textErr','حدث خطأ، تأكدي من الـ API Key وحاولي مرة أخرى');
-      document.getElementById('canvasBody').innerHTML='<div class="placeholder"><div class="icon">⚠️</div><p>حدث خطأ</p><small>تحققي من الـ API Key</small></div>';
+      showErr('textErr',e.message==='API_KEY_MISSING'?'حطي الـ API Key الأول!':'حدث خطأ، تأكدي من الـ API Key وحاولي مرة أخرى');
+      document.getElementById('canvasBody').innerHTML='<div class="placeholder"><div class="icon">⚠️</div><p>حدث خطأ</p><small>تأكدي من الـ API Key</small></div>';
     }
     btn.disabled=false;btn.textContent='✨ توليد التصميم';
   }
@@ -304,22 +322,18 @@ async function generate(type){
     hideErr('sketchErr');
     const btn=document.getElementById('sketchBtn');
     btn.disabled=true;btn.textContent='جاري التحليل...';
-    document.getElementById('canvasBody').innerHTML=`<div class="loading-box"><div class="spinner"></div><p>بيحلل الرسمة ويولد التصور...</p></div>`;
+    document.getElementById('canvasBody').innerHTML='<div class="loading-box"><div class="spinner"></div><p>بيحلل الرسمة ويولد التصور...</p></div>';
     const s=getSpecs();
     const prompt=`أنت مصمم أثاث خبير. حلل رسمة اليد دي واعمل تصور نهائي احترافي.
 الخامة: ${s.mat} | اللون: ${s.colorName} (${s.color}) | الفينيش: ${s.finish}
 المقاسات: طول ${s.w}سم × عمق ${s.d}سم × ارتفاع ${s.h}سم
-
-أجب بـ JSON فقط بدون أي نص إضافي:
-{"name":"اسم القطعة","description":"تفسير الرسمة والتصور النهائي","svg":"كود SVG viewBox 0 0 500 350 بلون ${s.color} كلون رئيسي","features":["ميزة1","ميزة2","ميزة3"],"style":"النمط","roomSuggestion":"اقتراح تنسيق"}`;
+أجب بـ JSON فقط:
+{"name":"اسم القطعة","description":"تفسير الرسمة والتصور النهائي","svg":"كود SVG viewBox='0 0 500 350' بلون ${s.color} كلون رئيسي","features":["ميزة1","ميزة2","ميزة3"],"style":"النمط","roomSuggestion":"اقتراح تنسيق"}`;
     try{
-      const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({contents:[{parts:[{inlineData:{mimeType:sketchMime,data:sketchB64}},{text:prompt}]}],generationConfig:{temperature:0.7,maxOutputTokens:2000}})
-      });
-      const data=await res.json();
-      if(data.error){showErr('sketchErr','خطأ: '+data.error.message);document.getElementById('canvasBody').innerHTML='<div class="placeholder"><div class="icon">⚠️</div><p>حدث خطأ</p></div>';btn.disabled=false;btn.textContent='🔍 تحليل الرسمة';return;}
-      const text=data.candidates[0].content.parts[0].text;
+      const text=await callAI([{role:'user',content:[
+        {type:'image_url',image_url:{url:'data:'+sketchMime+';base64,'+sketchB64}},
+        {type:'text',text:prompt}
+      ]}]);
       const clean=text.replace(/```json|```/g,'').trim();
       const parsed=JSON.parse(clean);
       lastResult={...parsed,specs:s};
@@ -339,9 +353,7 @@ function renderResult(r){
   <div class="result-wrap">
     <div class="render-box" style="${bg}">
       ${r.svg||'<p style="color:#bbb">لم يتم توليد صورة</p>'}
-      <div class="specs-badge">
-        ${s.mat}<br>${s.colorName} · ${s.finish}<br>${s.w}×${s.d}×${s.h} سم
-      </div>
+      <div class="specs-badge">${s.mat}<br>${s.colorName} · ${s.finish}<br>${s.w}×${s.d}×${s.h} سم</div>
     </div>
     <div class="info-card">
       <div class="info-title">${r.name||''}</div>
@@ -358,7 +370,7 @@ function exportHTML(){
   const html=`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>${lastResult.name}</title><style>body{font-family:Arial,sans-serif;padding:30px;background:#f5f2ee;direction:rtl}h1{color:#2c2c2a;margin-bottom:16px}.info{background:#fff;border-radius:12px;padding:20px;border:1px solid #e8e4df;margin-bottom:16px}.svg-box{background:#fff;border-radius:12px;padding:24px;border:1px solid #e8e4df;text-align:center}p{margin:6px 0;color:#555;line-height:1.7}</style></head><body><h1>${lastResult.name}</h1><div class="info"><p><strong>الخامة:</strong> ${s.mat}</p><p><strong>اللون:</strong> ${s.colorName}</p><p><strong>الفينيش:</strong> ${s.finish}</p><p><strong>المقاسات:</strong> ${s.w} × ${s.d} × ${s.h} سم</p></div><div class="svg-box">${lastResult.svg}</div><div class="info"><p>${lastResult.description}</p>${(lastResult.features||[]).map(f=>`<p>✓ ${f}</p>`).join('')}</div></body></html>`;
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));
-  a.download=`FurniSketch_${Date.now()}.html`;
+  a.download='FurniSketch_'+Date.now()+'.html';
   a.click();
 }
 </script>
