@@ -1,378 +1,59 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FurniSketch Pro — مصمم الأثاث الذكي</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:#f5f2ee;color:#2c2c2a;direction:rtl}
-header{background:#2c2c2a;color:#fff;padding:16px 24px;display:flex;align-items:center;gap:12px}
-.logo{font-size:22px;font-weight:700;letter-spacing:-0.5px}
-.logo span{color:#c8a97a}
-.subtitle{font-size:13px;opacity:.6;margin-top:2px}
-.main{display:grid;grid-template-columns:320px 1fr;min-height:calc(100vh - 60px)}
-.sidebar{background:#fff;border-left:1px solid #e8e4df;padding:0;overflow-y:auto}
-.section{padding:16px;border-bottom:1px solid #f0ece6}
-.section-title{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
-textarea{width:100%;min-height:100px;resize:vertical;border:1px solid #e0dbd5;border-radius:8px;padding:10px 12px;font-size:14px;font-family:inherit;color:#2c2c2a;background:#faf9f7;line-height:1.7}
-textarea:focus{outline:none;border-color:#c8a97a}
-.api-input{width:100%;border:1px solid #e0dbd5;border-radius:8px;padding:9px 12px;font-size:13px;font-family:inherit;color:#2c2c2a;background:#faf9f7}
-.api-input:focus{outline:none;border-color:#c8a97a}
-.btn-main{width:100%;margin-top:10px;padding:12px;border-radius:8px;background:#2c2c2a;color:#fff;border:none;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:opacity .2s}
-.btn-main:hover{opacity:.85}
-.btn-main:disabled{opacity:.4;cursor:not-allowed}
-.mat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.mat-card{border:1.5px solid #e8e4df;border-radius:8px;padding:8px;cursor:pointer;text-align:center;transition:all .2s}
-.mat-card:hover{border-color:#c8a97a}
-.mat-card.sel{border-color:#2c2c2a;border-width:2px}
-.swatch{width:100%;height:34px;border-radius:6px;margin-bottom:5px}
-.mat-name{font-size:11px;font-weight:600;color:#2c2c2a}
-.colors{display:flex;flex-wrap:wrap;gap:8px}
-.cdot{width:30px;height:30px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform .15s}
-.cdot:hover{transform:scale(1.1)}
-.cdot.sel{border-color:#2c2c2a;transform:scale(1.15)}
-.finishes{display:flex;flex-wrap:wrap;gap:6px}
-.fbtn{padding:6px 12px;border-radius:8px;font-size:12px;border:1px solid #e0dbd5;background:#fff;cursor:pointer;font-family:inherit;color:#666;transition:all .2s}
-.fbtn:hover{border-color:#2c2c2a;color:#2c2c2a}
-.fbtn.sel{background:#2c2c2a;color:#fff;border-color:#2c2c2a}
-.dim-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.dim-label{font-size:13px;color:#666;width:56px}
-.dim-input{flex:1;padding:7px 10px;border:1px solid #e0dbd5;border-radius:8px;font-size:13px;font-family:inherit}
-.dim-input:focus{outline:none;border-color:#c8a97a}
-.dim-unit{font-size:12px;color:#999;width:24px}
-.canvas{background:#f0ece6;display:flex;flex-direction:column}
-.toolbar{background:#fff;border-bottom:1px solid #e8e4df;padding:10px 16px;display:flex;gap:8px;align-items:center}
-.tbtn{padding:7px 14px;border:1px solid #e0dbd5;border-radius:8px;background:#fff;cursor:pointer;font-size:13px;font-family:inherit;color:#666;display:flex;align-items:center;gap:5px;transition:all .2s}
-.tbtn:hover{border-color:#2c2c2a;color:#2c2c2a}
-.tbtn.act{background:#2c2c2a;color:#fff;border-color:#2c2c2a}
-.spacer{flex:1}
-.export-btn{padding:7px 14px;border:1px solid #c8a97a;border-radius:8px;background:#fff;cursor:pointer;font-size:13px;font-family:inherit;color:#c8a97a;transition:all .2s}
-.export-btn:hover{background:#c8a97a;color:#fff}
-.canvas-body{flex:1;display:flex;align-items:center;justify-content:center;padding:24px;min-height:500px}
-.placeholder{text-align:center;color:#bbb}
-.placeholder .icon{font-size:64px;margin-bottom:16px}
-.placeholder p{font-size:16px;color:#999;margin-bottom:6px}
-.placeholder small{font-size:13px;color:#bbb}
-.result-wrap{width:100%;max-width:640px;display:flex;flex-direction:column;gap:14px}
-.render-box{background:#fff;border-radius:12px;border:1px solid #e8e4df;padding:24px;min-height:300px;display:flex;align-items:center;justify-content:center;position:relative}
-.render-box svg{max-width:100%;height:auto}
-.specs-badge{position:absolute;bottom:12px;left:12px;background:#2c2c2a;color:#fff;border-radius:8px;padding:8px 12px;font-size:11px;line-height:1.8}
-.info-card{background:#fff;border-radius:12px;border:1px solid #e8e4df;padding:16px}
-.info-title{font-size:16px;font-weight:700;margin-bottom:8px;color:#2c2c2a}
-.info-desc{font-size:14px;color:#555;line-height:1.7;margin-bottom:12px}
-.tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
-.tag{background:#f5f2ee;border:1px solid #e8e4df;border-radius:6px;padding:4px 10px;font-size:12px;color:#666}
-.room-tip{font-size:12px;color:#999;padding-top:8px;border-top:1px solid #f0ece6}
-.loading-box{text-align:center;padding:40px}
-.spinner{width:40px;height:40px;border:3px solid #e8e4df;border-top-color:#2c2c2a;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading-box p{font-size:14px;color:#999}
-.err{background:#fff0f0;border:1px solid #ffcccc;border-radius:8px;padding:10px 12px;font-size:13px;color:#cc3333;margin-top:8px}
-.upload-zone{border:2px dashed #e0dbd5;border-radius:8px;padding:20px;text-align:center;cursor:pointer;position:relative;transition:all .2s}
-.upload-zone:hover{border-color:#c8a97a;background:#fdf9f5}
-.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.upload-icon{font-size:32px;margin-bottom:6px}
-.upload-text{font-size:13px;color:#888}
-.preview-img{width:100%;border-radius:8px;border:1px solid #e8e4df;margin-top:10px}
-.tabs{display:flex;gap:0;border-bottom:1px solid #e8e4df}
-.tab{flex:1;padding:12px;text-align:center;cursor:pointer;font-size:14px;font-weight:600;color:#999;border-bottom:2px solid transparent;transition:all .2s;background:#fff}
-.tab.act{color:#2c2c2a;border-bottom-color:#2c2c2a}
-.free-badge{background:#e8f5e9;color:#2e7d32;border:1px solid #c8e6c9;border-radius:6px;padding:4px 10px;font-size:11px;margin-top:6px;display:inline-block}
-@media(max-width:700px){.main{grid-template-columns:1fr}.canvas{min-height:400px}}
-</style>
+    <meta charset="UTF-8">
+    <title>FurniSketch Pro - لوحة التحكم</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; padding: 20px; }
+        .panel { max-width: 500px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { color: #333; }
+        .control-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        select, input { width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc; }
+        button { width: 100%; background: #007bff; color: white; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        button:hover { background: #0056b3; }
+    </style>
 </head>
 <body>
-
-<header>
-  <div>
-    <div class="logo">Furni<span>Sketch</span> Pro</div>
-    <div class="subtitle">محول أفكار الأثاث بالذكاء الاصطناعي</div>
-  </div>
-</header>
-
-<div class="main">
-  <div class="sidebar">
-
-    <div class="section" style="background:#fffbf5;border-bottom:2px solid #c8a97a">
-      <div class="section-title">🔑 OpenRouter API Key</div>
-      <input class="api-input" type="password" id="apiKey" placeholder="sk-or-..." />
-      <div class="free-badge">✅ مجاني 100% بدون حدود</div>
-      <div style="font-size:11px;color:#999;margin-top:6px">مش بيتحفظ — بيُستخدم في المتصفح بس</div>
-    </div>
-
-    <div class="tabs">
-      <div class="tab act" onclick="switchTab('text')">✏️ وصف فكرة</div>
-      <div class="tab" onclick="switchTab('sketch')">🖼️ رفع رسمة</div>
-    </div>
-
-    <div id="text-panel">
-      <div class="section">
-        <div class="section-title">وصف القطعة</div>
-        <textarea id="promptInput" placeholder="مثال: كنبة L شكل من خشب الزان، مقاس 3×2 متر، مسند ذراع واسع، تناسب غرفة معيشة عصرية..."></textarea>
-        <div id="textErr" class="err" style="display:none"></div>
-        <button class="btn-main" onclick="generate('text')" id="genBtn">✨ توليد التصميم</button>
-      </div>
-    </div>
-
-    <div id="sketch-panel" style="display:none">
-      <div class="section">
-        <div class="section-title">ارفعي رسمة اليد</div>
-        <div class="upload-zone">
-          <input type="file" accept="image/*" onchange="handleUpload(event)" />
-          <div class="upload-icon">✏️</div>
-          <div class="upload-text">اسحبي الصورة أو اضغطي للرفع</div>
-          <div style="font-size:11px;color:#bbb;margin-top:4px">PNG, JPG — حد أقصى 10MB</div>
+    <div class="panel">
+        <h2>🎨 لوحة تحكم التصميم</h2>
+        
+        <div class="control-group">
+            <label>اختر الخامة:</label>
+            <select id="material">
+                <option value="wood">خشب بلوط</option>
+                <option value="metal">معدن</option>
+                <option value="velvet">مخمل</option>
+                <option value="leather">جلد</option>
+            </select>
         </div>
-        <img id="sketchPreview" class="preview-img" style="display:none" />
-        <div id="sketchErr" class="err" style="display:none"></div>
-        <button class="btn-main" onclick="generate('sketch')" id="sketchBtn" style="display:none;margin-top:8px">🔍 تحليل الرسمة</button>
-      </div>
-    </div>
 
-    <div class="section">
-      <div class="section-title">الخامة</div>
-      <div class="mat-grid">
-        <div class="mat-card sel" onclick="selMat(this,'خشب بلوط طبيعي')">
-          <div class="swatch" style="background:linear-gradient(135deg,#c8a97a,#a07850)"></div>
-          <div class="mat-name">بلوط</div>
+        <div class="control-group">
+            <label>اختر اللون:</label>
+            <input type="color" id="colorPicker" value="#8B4513">
         </div>
-        <div class="mat-card" onclick="selMat(this,'خشب جوز أمريكي')">
-          <div class="swatch" style="background:linear-gradient(135deg,#6b4c35,#4a3020)"></div>
-          <div class="mat-name">جوز</div>
+
+        <div class="control-group">
+            <label>ستايل التصميم:</label>
+            <select id="style">
+                <option value="modern">مودرن (عصري)</option>
+                <option value="classic">كلاسيك (فخم)</option>
+                <option value="industrial">صناعي (Industrial)</option>
+            </select>
         </div>
-        <div class="mat-card" onclick="selMat(this,'MDF مطلي')">
-          <div class="swatch" style="background:linear-gradient(135deg,#e8e4df,#d0cbc4)"></div>
-          <div class="mat-name">MDF</div>
-        </div>
-        <div class="mat-card" onclick="selMat(this,'معدن مصقول')">
-          <div class="swatch" style="background:linear-gradient(135deg,#d0d0d0,#a0a0a0)"></div>
-          <div class="mat-name">معدن</div>
-        </div>
-        <div class="mat-card" onclick="selMat(this,'جلد طبيعي')">
-          <div class="swatch" style="background:linear-gradient(135deg,#c4895a,#a06040)"></div>
-          <div class="mat-name">جلد</div>
-        </div>
-        <div class="mat-card" onclick="selMat(this,'قماش مخمل')">
-          <div class="swatch" style="background:linear-gradient(135deg,#8b7bb5,#6b5b95)"></div>
-          <div class="mat-name">مخمل</div>
-        </div>
-      </div>
+
+        <button onclick="applyChanges()">تطبيق التعديلات على الرسمة</button>
     </div>
 
-    <div class="section">
-      <div class="section-title">اللون</div>
-      <div class="colors">
-        <div class="cdot sel" style="background:#c8a97a" onclick="selColor(this,'#c8a97a','بيج ذهبي')" title="بيج ذهبي"></div>
-        <div class="cdot" style="background:#6b4c35" onclick="selColor(this,'#6b4c35','بني داكن')" title="بني داكن"></div>
-        <div class="cdot" style="background:#2c2c2a" onclick="selColor(this,'#2c2c2a','أسود مطفي')" title="أسود مطفي"></div>
-        <div class="cdot" style="background:#e8e4df;border:1px solid #ddd" onclick="selColor(this,'#e8e4df','أوف وايت')" title="أوف وايت"></div>
-        <div class="cdot" style="background:#8b7bb5" onclick="selColor(this,'#8b7bb5','بنفسجي')" title="بنفسجي"></div>
-        <div class="cdot" style="background:#4a7c6f" onclick="selColor(this,'#4a7c6f','أخضر سيج')" title="أخضر سيج"></div>
-        <div class="cdot" style="background:#c4895a" onclick="selColor(this,'#c4895a','نحاسي')" title="نحاسي"></div>
-        <div class="cdot" style="background:#b5c4d0" onclick="selColor(this,'#b5c4d0','رمادي مزرق')" title="رمادي مزرق"></div>
-        <div class="cdot" style="background:#7a9e8e" onclick="selColor(this,'#7a9e8e','أخضر مطفي')" title="أخضر مطفي"></div>
-        <div class="cdot" style="background:#d4a574" onclick="selColor(this,'#d4a574','تيراكوتا')" title="تيراكوتا"></div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-title">الفينيش</div>
-      <div class="finishes">
-        <button class="fbtn sel" onclick="selFinish(this,'مطفي')">مطفي</button>
-        <button class="fbtn" onclick="selFinish(this,'لامع')">لامع</button>
-        <button class="fbtn" onclick="selFinish(this,'نصف لامع')">نصف لامع</button>
-        <button class="fbtn" onclick="selFinish(this,'فرشاة')">فرشاة</button>
-        <button class="fbtn" onclick="selFinish(this,'أنتيك')">أنتيك</button>
-        <button class="fbtn" onclick="selFinish(this,'مشجر طبيعي')">مشجر طبيعي</button>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-title">المقاسات (سم)</div>
-      <div class="dim-row">
-        <span class="dim-label">الطول</span>
-        <input class="dim-input" type="number" id="dimW" value="200" min="10" max="500">
-        <span class="dim-unit">سم</span>
-      </div>
-      <div class="dim-row">
-        <span class="dim-label">العرض</span>
-        <input class="dim-input" type="number" id="dimD" value="90" min="10" max="300">
-        <span class="dim-unit">سم</span>
-      </div>
-      <div class="dim-row">
-        <span class="dim-label">الارتفاع</span>
-        <input class="dim-input" type="number" id="dimH" value="85" min="10" max="250">
-        <span class="dim-unit">سم</span>
-      </div>
-    </div>
-
-  </div>
-
-  <div class="canvas">
-    <div class="toolbar">
-      <button class="tbtn act" onclick="setView(this,'2D')">📐 2D أمامي</button>
-      <button class="tbtn" onclick="setView(this,'3D')">📦 3D منظوري</button>
-      <button class="tbtn" onclick="setView(this,'room')">🏠 في الغرفة</button>
-      <div class="spacer"></div>
-      <button class="export-btn" onclick="exportHTML()">💾 حفظ التصميم</button>
-    </div>
-    <div class="canvas-body" id="canvasBody">
-      <div class="placeholder">
-        <div class="icon">🪑</div>
-        <p>ابدئي بوصف قطعة الأثاث</p>
-        <small>أو ارفعي رسمة اليد من الشريط الجانبي</small>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-let mat='خشب بلوط طبيعي',color='#c8a97a',colorName='بيج ذهبي',finish='مطفي',view='2D';
-let lastResult=null,sketchB64=null,sketchMime=null;
-
-function switchTab(t){
-  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('act',(i===0&&t==='text')||(i===1&&t==='sketch')));
-  document.getElementById('text-panel').style.display=t==='text'?'':'none';
-  document.getElementById('sketch-panel').style.display=t==='sketch'?'':'none';
-}
-function selMat(el,n){document.querySelectorAll('.mat-card').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');mat=n;}
-function selColor(el,h,n){document.querySelectorAll('.cdot').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');color=h;colorName=n;}
-function selFinish(el,n){document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');finish=n;}
-function setView(el,v){document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('act'));el.classList.add('act');view=v;if(lastResult)renderResult(lastResult);}
-
-function handleUpload(e){
-  const f=e.target.files[0];if(!f)return;
-  sketchMime=f.type;
-  const r=new FileReader();
-  r.onload=ev=>{
-    sketchB64=ev.target.result.split(',')[1];
-    document.getElementById('sketchPreview').src=ev.target.result;
-    document.getElementById('sketchPreview').style.display='block';
-    document.getElementById('sketchBtn').style.display='block';
-  };
-  r.readAsDataURL(f);
-}
-
-function getSpecs(){
-  return{w:document.getElementById('dimW').value,d:document.getElementById('dimD').value,h:document.getElementById('dimH').value,mat,color,colorName,finish,view};
-}
-
-function showErr(id,msg){const el=document.getElementById(id);el.textContent=msg;el.style.display='block';}
-function hideErr(id){document.getElementById(id).style.display='none';}
-
-async function callAI(messages){
-  const key=document.getElementById('apiKey').value.trim();
-  if(!key)throw new Error('API_KEY_MISSING');
-  const res=await fetch('https://openrouter.ai/api/v1/chat/completions',{
-    method:'POST',
-    headers:{
-      'Content-Type':'application/json',
-      'Authorization':'Bearer '+key,
-      'HTTP-Referer':'https://furnisketch-pro.netlify.app',
-      'X-Title':'FurniSketch Pro'
-    },
-    body:JSON.stringify({
-      model:'meta-llama/llama-3.2-11b-vision-instruct:free',
-      messages:messages,
-      max_tokens:2000
-    })
-  });
-  const data=await res.json();
-  if(data.error)throw new Error(data.error.message);
-  return data.choices[0].message.content;
-}
-
-async function generate(type){
-  const key=document.getElementById('apiKey').value.trim();
-  if(!key){alert('من فضلك حطي الـ API Key الأول!');return;}
-
-  if(type==='text'){
-    const p=document.getElementById('promptInput').value.trim();
-    if(!p){showErr('textErr','اكتبي وصف القطعة الأول');return;}
-    hideErr('textErr');
-    const btn=document.getElementById('genBtn');
-    btn.disabled=true;btn.textContent='جاري التوليد...';
-    document.getElementById('canvasBody').innerHTML='<div class="loading-box"><div class="spinner"></div><p>الذكاء الاصطناعي بيصمم قطعتك...</p></div>';
-    const s=getSpecs();
-    const prompt=`أنت مصمم أثاث خبير. اعمل تصور لقطعة الأثاث التالية وأجب بـ JSON فقط بدون أي نص إضافي أو backticks:
-الوصف: ${p}
-الخامة: ${s.mat} | اللون: ${s.colorName} (${s.color}) | الفينيش: ${s.finish}
-المقاسات: طول ${s.w}سم × عمق ${s.d}سم × ارتفاع ${s.h}سم
-العرض: ${s.view==='2D'?'رسمة هندسية أمامية':s.view==='3D'?'منظور ثلاثي الأبعاد':'تصور في غرفة معيشة'}
-
-أجب بهذا الـ JSON بالظبط:
-{"name":"اسم القطعة","description":"وصف تفصيلي 3 جمل","svg":"كود SVG كامل viewBox='0 0 500 350' للقطعة بلون ${s.color} كلون رئيسي مع تفاصيل واضحة","features":["ميزة1","ميزة2","ميزة3"],"style":"النمط التصميمي","roomSuggestion":"اقتراح للتنسيق في الغرفة"}`;
-    try{
-      const text=await callAI([{role:'user',content:prompt}]);
-      const clean=text.replace(/```json|```/g,'').trim();
-      const parsed=JSON.parse(clean);
-      lastResult={...parsed,specs:s};
-      renderResult(lastResult);
-    }catch(e){
-      showErr('textErr',e.message==='API_KEY_MISSING'?'حطي الـ API Key الأول!':'حدث خطأ، تأكدي من الـ API Key وحاولي مرة أخرى');
-      document.getElementById('canvasBody').innerHTML='<div class="placeholder"><div class="icon">⚠️</div><p>حدث خطأ</p><small>تأكدي من الـ API Key</small></div>';
-    }
-    btn.disabled=false;btn.textContent='✨ توليد التصميم';
-  }
-
-  if(type==='sketch'){
-    if(!sketchB64){showErr('sketchErr','ارفعي صورة الأول');return;}
-    hideErr('sketchErr');
-    const btn=document.getElementById('sketchBtn');
-    btn.disabled=true;btn.textContent='جاري التحليل...';
-    document.getElementById('canvasBody').innerHTML='<div class="loading-box"><div class="spinner"></div><p>بيحلل الرسمة ويولد التصور...</p></div>';
-    const s=getSpecs();
-    const prompt=`أنت مصمم أثاث خبير. حلل رسمة اليد دي واعمل تصور نهائي احترافي.
-الخامة: ${s.mat} | اللون: ${s.colorName} (${s.color}) | الفينيش: ${s.finish}
-المقاسات: طول ${s.w}سم × عمق ${s.d}سم × ارتفاع ${s.h}سم
-أجب بـ JSON فقط:
-{"name":"اسم القطعة","description":"تفسير الرسمة والتصور النهائي","svg":"كود SVG viewBox='0 0 500 350' بلون ${s.color} كلون رئيسي","features":["ميزة1","ميزة2","ميزة3"],"style":"النمط","roomSuggestion":"اقتراح تنسيق"}`;
-    try{
-      const text=await callAI([{role:'user',content:[
-        {type:'image_url',image_url:{url:'data:'+sketchMime+';base64,'+sketchB64}},
-        {type:'text',text:prompt}
-      ]}]);
-      const clean=text.replace(/```json|```/g,'').trim();
-      const parsed=JSON.parse(clean);
-      lastResult={...parsed,specs:s};
-      renderResult(lastResult);
-    }catch(e){
-      showErr('sketchErr','حدث خطأ، تأكدي من الـ API Key وحاولي مرة أخرى');
-      document.getElementById('canvasBody').innerHTML='<div class="placeholder"><div class="icon">⚠️</div><p>حدث خطأ</p></div>';
-    }
-    btn.disabled=false;btn.textContent='🔍 تحليل الرسمة';
-  }
-}
-
-function renderResult(r){
-  const s=r.specs;
-  const bg=s.view==='room'?'background:linear-gradient(180deg,#d4c9bc,#b8a898)':s.view==='3D'?'background:#f5f2ee':'background:#ffffff';
-  document.getElementById('canvasBody').innerHTML=`
-  <div class="result-wrap">
-    <div class="render-box" style="${bg}">
-      ${r.svg||'<p style="color:#bbb">لم يتم توليد صورة</p>'}
-      <div class="specs-badge">${s.mat}<br>${s.colorName} · ${s.finish}<br>${s.w}×${s.d}×${s.h} سم</div>
-    </div>
-    <div class="info-card">
-      <div class="info-title">${r.name||''}</div>
-      <div class="info-desc">${r.description||''}</div>
-      <div class="tags">${(r.features||[]).map(f=>`<span class="tag">✓ ${f}</span>`).join('')}</div>
-      ${r.roomSuggestion?`<div class="room-tip">🏠 ${r.roomSuggestion}</div>`:''}
-    </div>
-  </div>`;
-}
-
-function exportHTML(){
-  if(!lastResult){alert('ولدي تصميم الأول!');return;}
-  const s=lastResult.specs;
-  const html=`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>${lastResult.name}</title><style>body{font-family:Arial,sans-serif;padding:30px;background:#f5f2ee;direction:rtl}h1{color:#2c2c2a;margin-bottom:16px}.info{background:#fff;border-radius:12px;padding:20px;border:1px solid #e8e4df;margin-bottom:16px}.svg-box{background:#fff;border-radius:12px;padding:24px;border:1px solid #e8e4df;text-align:center}p{margin:6px 0;color:#555;line-height:1.7}</style></head><body><h1>${lastResult.name}</h1><div class="info"><p><strong>الخامة:</strong> ${s.mat}</p><p><strong>اللون:</strong> ${s.colorName}</p><p><strong>الفينيش:</strong> ${s.finish}</p><p><strong>المقاسات:</strong> ${s.w} × ${s.d} × ${s.h} سم</p></div><div class="svg-box">${lastResult.svg}</div><div class="info"><p>${lastResult.description}</p>${(lastResult.features||[]).map(f=>`<p>✓ ${f}</p>`).join('')}</div></body></html>`;
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));
-  a.download='FurniSketch_'+Date.now()+'.html';
-  a.click();
-}
-</script>
+    <script>
+        function applyChanges() {
+            const material = document.getElementById('material').value;
+            const color = document.getElementById('colorPicker').value;
+            const style = document.getElementById('style').value;
+            
+            alert("تم تحديث التصميم بـ: \nالخامة: " + material + "\nاللون: " + color + "\nالستايل: " + style);
+            // هنا سنضيف لاحقاً كود ربط الرسمة بهذه القيم
+        }
+    </script>
 </body>
 </html>
